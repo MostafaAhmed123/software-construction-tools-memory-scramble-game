@@ -14,10 +14,15 @@ public class GameBoard extends JPanel {
     private Card secondSelected;
     private int matchedPairs;
 
+    private final JLabel timerLabel = new JLabel();
+
     public GameBoard(GameConfig config) {
         this.config = config;
         this.cards = new Card[config.getRows()][config.getCols()];
         this.remainingSeconds = config.getTimeoutSeconds();
+
+        setLayout(new BorderLayout());
+
 
         JPanel grid = new JPanel(new GridLayout(config.getRows(), config.getCols(), 6, 6));
         grid.setBackground(new Color(44, 62, 80));
@@ -36,20 +41,30 @@ public class GameBoard extends JPanel {
                     @Override
                     public void mousePressed(java.awt.event.MouseEvent e) {
                         if (inputLocked || card.isFaceUp() || card.isMatched()) return;
+
                         card.setFaceUp(true);
+
                         if (firstSelected == null) {
                             firstSelected = card;
                             return;
                         }
                         secondSelected = card;
                         inputLocked = true;
+
                         if (firstSelected.getShapeId() == secondSelected.getShapeId()) {
                             firstSelected.setMatched(true);
                             secondSelected.setMatched(true);
                             matchedPairs++;
+
                             resetSelection();
-                        }
-                        else{
+
+                            // تحقق من الفوز
+                            if (matchedPairs == config.getTotalPairs()) {
+                                inputLocked = true;
+                                JOptionPane.showMessageDialog(GameBoard.this, "Congratulations! You Win!");
+                            }
+
+                        } else {
                             Timer delay = new Timer(800, t -> {
                                 firstSelected.setFaceUp(false);
                                 secondSelected.setFaceUp(false);
@@ -63,8 +78,27 @@ public class GameBoard extends JPanel {
                 grid.add(card);
             }
         }
+
         add(grid, BorderLayout.CENTER);
 
+
+        timerLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        timerLabel.setForeground(Color.BLACK);
+        timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        timerLabel.setText("Time: " + remainingSeconds + "s");
+        add(timerLabel, BorderLayout.NORTH);
+
+        Timer countdown = new Timer(1000, e -> {
+            remainingSeconds--;
+            timerLabel.setText("Time: " + remainingSeconds + "s");
+
+            if (remainingSeconds <= 0) {
+                ((Timer) e.getSource()).stop();
+                inputLocked = true;
+                JOptionPane.showMessageDialog(this, "Time's up! Game Over!");
+            }
+        });
+        countdown.start();
     }
 
     private void resetSelection() {

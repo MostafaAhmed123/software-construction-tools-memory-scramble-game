@@ -59,7 +59,6 @@ public class GameBoard extends JPanel {
 
                             resetSelection();
 
-                            // تحقق من الفوز
                             if (matchedPairs == config.getTotalPairs()) {
                                 countdown.stop();
                                 inputLocked = true;

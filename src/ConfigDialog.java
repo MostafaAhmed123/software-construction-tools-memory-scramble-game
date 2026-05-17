@@ -3,8 +3,8 @@ import java.awt.*;
 
 public class ConfigDialog extends JDialog {
 
-    private final JSpinner rowsSpinner = new JSpinner(new SpinnerNumberModel(4, 2, 20, 1));
-    private final JSpinner colsSpinner = new JSpinner(new SpinnerNumberModel(4, 2, 20, 1));
+    private final JSpinner rowsSpinner = new JSpinner(new SpinnerNumberModel(4, 2, 10, 1));
+    private final JSpinner colsSpinner = new JSpinner(new SpinnerNumberModel(4, 2, 10, 1));
     private final JSpinner timeoutSpinner = new JSpinner(new SpinnerNumberModel(60, 10, 300, 10));
     private GameConfig result;
 

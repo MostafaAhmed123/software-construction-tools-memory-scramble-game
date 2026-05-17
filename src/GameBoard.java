@@ -15,6 +15,7 @@ public class GameBoard extends JPanel {
     private int matchedPairs;
 
     private final JLabel timerLabel = new JLabel();
+    private Timer countdown;
 
     public GameBoard(GameConfig config) {
         this.config = config;
@@ -60,8 +61,9 @@ public class GameBoard extends JPanel {
 
                             // تحقق من الفوز
                             if (matchedPairs == config.getTotalPairs()) {
+                                countdown.stop();
                                 inputLocked = true;
-                                JOptionPane.showMessageDialog(GameBoard.this, "Congratulations! You Win!");
+                                promptReplay("Congratulations! You Win!");
                             }
 
                         } else {
@@ -88,14 +90,14 @@ public class GameBoard extends JPanel {
         timerLabel.setText("Time: " + remainingSeconds + "s");
         add(timerLabel, BorderLayout.NORTH);
 
-        Timer countdown = new Timer(1000, e -> {
+        countdown = new Timer(1000, e -> {
             remainingSeconds--;
             timerLabel.setText("Time: " + remainingSeconds + "s");
 
             if (remainingSeconds <= 0) {
                 ((Timer) e.getSource()).stop();
                 inputLocked = true;
-                JOptionPane.showMessageDialog(this, "Time's up! Game Over!");
+                promptReplay("Time's up! Game Over!");
             }
         });
         countdown.start();
@@ -105,5 +107,22 @@ public class GameBoard extends JPanel {
         firstSelected = null;
         secondSelected = null;
         inputLocked = false;
+    }
+
+    private void promptReplay(String message) {
+        int choice = JOptionPane.showConfirmDialog(this,
+            message + "\nWould you like to play again?",
+            "Game Over", JOptionPane.YES_NO_OPTION);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            GameConfig newConfig = new ConfigDialog(frame).showDialog();
+            if (newConfig != null) {
+                GameBoard newBoard = new GameBoard(newConfig);
+                frame.setContentPane(newBoard);
+                frame.setSize(Math.max(newConfig.getCols() * 110 + 30, 400), newConfig.getRows() * 110 + 100);
+                frame.revalidate();
+            }
+        }
     }
 }

@@ -5,8 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class GameBoard extends JPanel {
-
-    private final GameConfig config;
+    
     private final Card[][] cards;
     private int remainingSeconds;
     private boolean inputLocked;
@@ -18,7 +17,6 @@ public class GameBoard extends JPanel {
     private Timer countdown;
 
     public GameBoard(GameConfig config) {
-        this.config = config;
         this.cards = new Card[config.getRows()][config.getCols()];
         this.remainingSeconds = config.getTimeoutSeconds();
 
